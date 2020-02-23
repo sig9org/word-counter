@@ -47,8 +47,27 @@ Count words, list results.
       "1234": 1
     }
 
+Count words in multiple URLs, list results.
+----------------------------------------
 
-Just count words
+.. code-block:: bash
+
+    $  word-counter \
+          https://blogs.cisco.com/developer/node-red-webinar \
+          https://blogs.cisco.com/developer/meraki-python-sdk-webinar \
+          https://blogs.cisco.com/developer/understanding-meraki-apis
+
+    {
+      ",": 51,
+      "the": 36,
+        .
+        .
+        .
+      "Resources": 1,
+      "certifications": 1
+    }
+
+Just count words.
 ----------------------------------------
 
 .. code-block:: bash
