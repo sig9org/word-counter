@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import collections
 import json
-import logging
 
 import click
 import requests
@@ -9,18 +8,7 @@ from bs4 import BeautifulSoup
 from polyglot.text import Text, WordList
 
 
-def get_logger() -> logging.Logger:
-    logging.basicConfig(
-        format="[%(asctime)s] %(message)s",
-        level=logging.INFO,
-        datefmt="%d-%b-%y %H:%M:%S",
-    )
-    logger = logging.getLogger("count-words")
-    logger.setLevel(logging.INFO)
-    return logger
-
-
-def get_words(urls: tuple, klass: str = 'entry-content') -> list:
+def get(urls: tuple, klass: str = 'entry-content') -> list:
     wlist = []
     for url in urls:
         html = requests.get(url).content
@@ -32,11 +20,7 @@ def get_words(urls: tuple, klass: str = 'entry-content') -> list:
     return wlist
 
 
-def count_words(urls: tuple, klass: str = 'entry-content') -> int:
-    return len(get_words(urls=urls, klass=klass))
-
-
-def _ranking(words: list) -> dict:
+def get_common_most(words: list) -> dict:
     common_words = collections.Counter(words).most_common()
     dic = {}
     for word in common_words:
@@ -44,26 +28,13 @@ def _ranking(words: list) -> dict:
     return dic
 
 
-def get_words_ranking(urls: tuple, klass: str = 'entry-content') -> dict:
-    words = get_words(urls=urls, klass=klass)
-    return _ranking(words)
-
-
 @click.command()
 @click.argument('urls', required=True, nargs=-1)
 @click.option('--klass', '-k', required=False, default='entry-content')
-@click.option('--count-only', '-c', is_flag=True, default=False)
-@click.option('--one-line', '-o', is_flag=True, default=False)
-@click.option('--quiet', '-w', is_flag=True, default=False)
-@click.option('--sort', '-s', is_flag=True, default=False)
 def word_counter(
     urls: str,
     klass: str,
-    count_only: bool = False,
-    one_line: bool = False,
-    quiet: bool = False,
-    sort: bool = False
-) -> None:  # noqa 501
+) -> None:
     """
     Count the number of words on the specified URL(s).
 
@@ -78,30 +49,16 @@ def word_counter(
         - klass
             Specify the HTML class name that counts the number of words.
             Default is 'entry-content'.
-
-    Optional flags:
-
-        - --count-only
-            Count the types of words.
-
-        - --one-line
-            Specify when you want to output the result in one line.
-
-        - --quiet
-            Disable logging.
-
-        - --sort
-            Specify when you want to sort the JSON output results.
     """
-    logger = get_logger()
-    if(quiet):
-        logging.disable(logging.FATAL)
-    if(count_only):
-        click.echo(count_words(urls=urls, klass=klass))
-        return True
+    wlist = get(urls=urls, klass=klass)
+    count = len(list(set(wlist)))
+    count_duplicates = len(wlist)
+    wdic = get_common_most(words=wlist)
 
-    words = get_words(urls=urls, klass=klass)
-    if(one_line):
-        click.echo(words)
-    _list = _ranking(words)
-    click.echo(json.dumps(_list, indent=2, ensure_ascii=False, sort_keys=sort))
+    dic = dict()
+    dic.update(
+        count=count,
+        count_duplicates=count_duplicates,
+        words=wdic,
+    )
+    click.echo(json.dumps(dic, indent=2, ensure_ascii=False, sort_keys=False))

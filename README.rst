@@ -8,18 +8,18 @@
  :target: https://github.com/sig9org/word-counter/graphs/contributors
 
 word-counter
-========================================
+==================================================
 
 Count the number of words on the specified URL(s).
 
 Requirements
-========================================
+==================================================
 
 - python 3.4+
 - libicu-devel
 
 Installation
-========================================
+==================================================
 
 In case of CentOS8, execute as follows:
 
@@ -29,48 +29,52 @@ In case of CentOS8, execute as follows:
     # pip install word-counter
 
 Usage (CLI)
-========================================
+==================================================
 
-Count words, list results.
-----------------------------------------
+Count words.
+--------------------------------------------------
 
 .. code-block:: bash
 
     $ word-counter --klass 'site-content' https://blogs.cisco.com/developer
     {
-      ",": 18,
-      "2020": 11,
+      "count": 226,
+      "count_duplicates": 377,
+      "words": {
+        ",": 18,
+        "2020": 11,
+        ".": 11,
         .
         .
         .
-      "monitoringStealthwatch": 1,
-      "1234": 1
+        "DevNetAPIsnetwork": 1,
+        "monitoringStealthwatch": 1,
+        "1234": 1
+      }
     }
 
-Count words in multiple URLs, list results.
-----------------------------------------
+
+Count words in multiple URLs.
+--------------------------------------------------
 
 .. code-block:: bash
 
-    $  word-counter \
-          https://blogs.cisco.com/developer/node-red-webinar \
-          https://blogs.cisco.com/developer/meraki-python-sdk-webinar \
-          https://blogs.cisco.com/developer/understanding-meraki-apis
-
+    $ word-counter \
+    >     https://blogs.cisco.com/developer/node-red-webinar \
+    >     https://blogs.cisco.com/developer/meraki-python-sdk-webinar \
+    >     https://blogs.cisco.com/developer/understanding-meraki-apis
     {
-      ",": 51,
-      "the": 36,
+      "count": 404,
+      "count_duplicates": 1018,
+      "words": {
+        ",": 51,
+        "the": 36,
+        "and": 30,
         .
         .
         .
-      "Resources": 1,
-      "certifications": 1
+        "Related": 1,
+        "Resources": 1,
+        "certifications": 1
+      }
     }
-
-Just count words.
-----------------------------------------
-
-.. code-block:: bash
-
-    $ word-counter --count-only --klass 'site-content' https://blogs.cisco.com/developer
-    377
